@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 
+import 'calendary.dart';
+
 class InsertEvent extends StatefulWidget {
   final DateTime fecha;
 
-  const InsertEvent({super.key, required this.fecha});
+  const InsertEvent({Key? key, required this.fecha}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _InsertEventState createState() => _InsertEventState();
 }
 
 class _InsertEventState extends State<InsertEvent> {
-  final TextEditingController _controller = TextEditingController();
+  TextEditingController _tituloController = TextEditingController();
+  TextEditingController _descripcionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Insertar Evento'),
+        title: Text('Agregar Evento'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -30,21 +32,37 @@ class _InsertEventState extends State<InsertEvent> {
             ),
             SizedBox(height: 16),
             TextField(
-              controller: _controller,
-              decoration: const InputDecoration(
-                labelText:'Nombre del Evento',
+              controller: _tituloController,
+              decoration: InputDecoration(
+                labelText: 'Título del Evento',
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
+            TextField(
+              controller: _descripcionController,
+              decoration: InputDecoration(
+                labelText: 'Descripción del Evento',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                String evento = _controller.text;
-                if (evento.isNotEmpty) {
-                  Navigator.pop(context, evento);
+                String titulo = _tituloController.text.trim();
+                String descripcion = _descripcionController.text.trim();
+                if (titulo.isNotEmpty) {
+                  DateTime horaActual = DateTime.now();
+                  Event nuevoEvento = Event(
+                    title: titulo,
+                    date: DateTime(widget.fecha.year, widget.fecha.month, widget.fecha.day, horaActual.hour, horaActual.minute),
+                    description: descripcion,
+                  );
+                  // Devuelve el nuevo evento a la pantalla anterior
+                  Navigator.pop(context, nuevoEvento);
                 }
               },
-              child: const Text('Guardar Evento'),
+              child: Text('Guardar Evento'),
             ),
           ],
         ),
@@ -54,7 +72,8 @@ class _InsertEventState extends State<InsertEvent> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _tituloController.dispose();
+    _descripcionController.dispose();
     super.dispose();
   }
 }

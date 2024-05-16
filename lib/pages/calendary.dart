@@ -171,7 +171,7 @@ class _calendarioAppState extends State<calendarioApp> {
             }
           });
         },
-        child: Icon(Icons.add),
+        child:const Icon(Icons.add),
       ),
     );
   }
