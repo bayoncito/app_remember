@@ -26,18 +26,11 @@ class Event {
 final descEventos = LinkedHashMap<DateTime, List<Event>>(
   equals: isSameDay,
   hashCode: getHashCode,
-)..addAll(_kEventSource);
+)..addAll(_eventosIngresados);
 
-final _kEventSource = Map.fromIterable(List.generate(50, (index) => index),
-    key: (item) => DateTime.utc(primerDia.year, primerDia.month, item * 5),
-    value: (item) => List.generate(
-        item % 4 + 1, (index) => Event('Event $item | ${index + 1}')))
-  ..addAll({
-    actualDia: [
-      Event('Today\'s Event 1'),
-      Event('Today\'s Event 2'),
-    ],
-  });
+
+final Map<DateTime, List<Event>> _eventosIngresados = {};
+
 
 int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
@@ -62,7 +55,7 @@ class _calendarioAppState extends State<calendarioApp> {
   }
 
   List<Event> _eventosPorDia(DateTime day) {
-    return descEventos[day] ?? [];
+    return _eventosIngresados[day] ?? [];
   }
 
   void diaSeleccionado(DateTime diaSeleccionado, DateTime diaActual) {
@@ -75,24 +68,17 @@ class _calendarioAppState extends State<calendarioApp> {
     }
   }
 
-  void agregarEvento(DateTime fecha) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => InsertEvent(fecha : fecha)),
-    ).then((eventoAgregado) {
-      if (eventoAgregado != null) {
-        setState(() {
-          // Agrega el evento a la lista de eventos
-          if (descEventos.containsKey(fecha)) {
-            descEventos[fecha]!.add(eventoAgregado);
-          } else {
-            descEventos[fecha] = [eventoAgregado];
-          }
-          _eventos.value = _eventosPorDia(_diaSeleccionado!);
-        });
-      }
-    });
-  }
+  void agregarEvento(DateTime fecha, String nombreEvento) {
+  setState(() {
+    if (_eventosIngresados.containsKey(fecha)) {
+      _eventosIngresados[fecha]!.add(Event(nombreEvento));
+    } else {
+      _eventosIngresados[fecha] = [Event(nombreEvento)];
+    }
+    _eventos.value = _eventosPorDia(_diaSeleccionado!);
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -152,11 +138,19 @@ class _calendarioAppState extends State<calendarioApp> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          agregarEvento(_diaSeleccionado!);
-        },
-        child: Icon(Icons.add),
-      ),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => InsertEvent(fecha: _diaSeleccionado!)),
+    ).then((nombreEvento) {
+      if (nombreEvento != null) {
+        agregarEvento(_diaSeleccionado!, nombreEvento);
+      }
+    });
+  },
+  child: Icon(Icons.add),
+),
+
     );
   }
 }

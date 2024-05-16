@@ -37,14 +37,15 @@ class _InsertEventState extends State<InsertEvent> {
             ),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                String evento = _controller.text;
-                if (evento.isNotEmpty) {
-                  Navigator.pop(context, evento);
-                }
-              },
-              child: Text('Guardar Evento'),
-            ),
+  onPressed: () {
+    String evento = _controller.text;
+    if (evento.isNotEmpty) {
+      Navigator.pop(context, evento);
+    }
+  },
+  child: Text('Guardar Evento'),
+),
+
           ],
         ),
       ),
