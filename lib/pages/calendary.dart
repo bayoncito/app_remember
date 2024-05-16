@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:remember_app/pages/events.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'dart:collection';
-
-
+import 'eventDetails.dart';
 
 final actualDia = DateTime.now();
 final primerDia = DateTime(actualDia.year, actualDia.month - 3, actualDia.day);
@@ -16,8 +15,10 @@ class calendarioApp extends StatefulWidget {
 
 class Event {
   final String title;
+  DateTime date;
+  String description;
 
-  const Event(this.title);
+  Event({required this.title, required this.date, required this.description});
 
   @override
   String toString() => title;
@@ -28,9 +29,7 @@ final descEventos = LinkedHashMap<DateTime, List<Event>>(
   hashCode: getHashCode,
 )..addAll(_eventosIngresados);
 
-
 final Map<DateTime, List<Event>> _eventosIngresados = {};
-
 
 int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
@@ -41,6 +40,21 @@ class _calendarioAppState extends State<calendarioApp> {
   CalendarFormat _formatoCalendario = CalendarFormat.month;
   DateTime _actualDay = DateTime.now();
   DateTime? _diaSeleccionado;
+
+  void modificarEvento(DateTime fecha, Event eventoModificado) {
+    setState(() {
+      if (_eventosIngresados.containsKey(fecha)) {
+        // Buscar el evento a modificar y actualizar sus detalles
+        _eventosIngresados[fecha]!.forEach((event) {
+          if (event.title == eventoModificado.title) {
+            event.date = eventoModificado.date;
+            event.description = eventoModificado.description;
+          }
+        });
+      }
+      _eventos.value = _eventosPorDia(_diaSeleccionado!);
+    });
+  }
 
   @override
   void initState() {
@@ -68,17 +82,16 @@ class _calendarioAppState extends State<calendarioApp> {
     }
   }
 
-  void agregarEvento(DateTime fecha, String nombreEvento) {
-  setState(() {
-    if (_eventosIngresados.containsKey(fecha)) {
-      _eventosIngresados[fecha]!.add(Event(nombreEvento));
-    } else {
-      _eventosIngresados[fecha] = [Event(nombreEvento)];
-    }
-    _eventos.value = _eventosPorDia(_diaSeleccionado!);
-  });
-}
-
+  void agregarEvento(DateTime fecha, Event nuevoEvento) {
+    setState(() {
+      if (_eventosIngresados.containsKey(fecha)) {
+        _eventosIngresados[fecha]!.add(nuevoEvento);
+      } else {
+        _eventosIngresados[fecha] = [nuevoEvento];
+      }
+      _eventos.value = _eventosPorDia(_diaSeleccionado!);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +140,15 @@ class _calendarioAppState extends State<calendarioApp> {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: ListTile(
+                        onTap: () {
+                          // Navegar a la pantalla de detalles del evento
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    EventDetails(evento: value[index])),
+                          );
+                        },
                         title: Text('${value[index]}'),
                       ),
                     );
@@ -138,19 +160,19 @@ class _calendarioAppState extends State<calendarioApp> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => InsertEvent(fecha: _diaSeleccionado!)),
-    ).then((nombreEvento) {
-      if (nombreEvento != null) {
-        agregarEvento(_diaSeleccionado!, nombreEvento);
-      }
-    });
-  },
-  child: Icon(Icons.add),
-),
-
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => InsertEvent(fecha: _diaSeleccionado!)),
+          ).then((nombreEvento) {
+            if (nombreEvento != null) {
+              agregarEvento(_diaSeleccionado!, nombreEvento);
+            }
+          });
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 }

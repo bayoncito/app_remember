@@ -3,20 +3,21 @@ import 'package:flutter/material.dart';
 class InsertEvent extends StatefulWidget {
   final DateTime fecha;
 
-  const InsertEvent({Key? key, required this.fecha}) : super(key: key);
+  const InsertEvent({super.key, required this.fecha});
 
   @override
+  // ignore: library_private_types_in_public_api
   _InsertEventState createState() => _InsertEventState();
 }
 
 class _InsertEventState extends State<InsertEvent> {
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Insertar Evento'),
+        title: const Text('Insertar Evento'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -30,22 +31,21 @@ class _InsertEventState extends State<InsertEvent> {
             SizedBox(height: 16),
             TextField(
               controller: _controller,
-              decoration: InputDecoration(
-                labelText: 'Nombre del Evento',
+              decoration: const InputDecoration(
+                labelText:'Nombre del Evento',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
-  onPressed: () {
-    String evento = _controller.text;
-    if (evento.isNotEmpty) {
-      Navigator.pop(context, evento);
-    }
-  },
-  child: Text('Guardar Evento'),
-),
-
+              onPressed: () {
+                String evento = _controller.text;
+                if (evento.isNotEmpty) {
+                  Navigator.pop(context, evento);
+                }
+              },
+              child: const Text('Guardar Evento'),
+            ),
           ],
         ),
       ),

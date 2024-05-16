@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import 'pages/calendary.dart'; 
+import 'pages/calendary.dart';
 
 void main() {
   initializeDateFormatting().then((_) => runApp(MyApp()));
@@ -23,7 +23,6 @@ class MyApp extends StatelessWidget {
 class StartPage extends StatefulWidget {
   @override
   _StartPageState createState() => _StartPageState();
-  
 }
 
 class _StartPageState extends State<StartPage> {
